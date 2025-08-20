@@ -16,11 +16,12 @@ def make_edits(input_file, output_dir):
     """
     
     with Image.open(input_file) as im:
+        #print(f"{im.format} {im.size} {im.mode} {input_file}")
         im = im.rotate(-90)
         im = im.resize((128, 128))
         im = im.convert("RGB")
         base_filename = os.path.basename(input_file)
-        im.save(os.path.join(output_dir, base_filename.split('.')[0] + '.jpeg'))
+        im.save(os.path.join(output_dir, os.path.splitext(base_filename)[0] + '.jpeg'))
 
 def drive_edits(input_dir, output_dir):
     """
@@ -34,7 +35,7 @@ def drive_edits(input_dir, output_dir):
     if not os.path.exists(input_dir):
         raise ValueError(f"Input directory '{input_dir}' does not exist.")
     
-    if len(os.listdir(input_dir)) <= 2:
+    if len([f for f in os.listdir(input_dir) if not f.startswith('.')]) == 0:
         print(f"Input directory '{input_dir}' is empty")
         return
     
@@ -49,12 +50,11 @@ def drive_edits(input_dir, output_dir):
             make_edits(os.path.join(input_dir,filename), output_dir)
         except Exception as e:
             print(f"Failed to process {filename}: {e}")
-            sys.exit(1)
-         
+        
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print(f"Usage: python {sys.argv[0]} <input_dir> <output_dir>")
+        print(f"Usage: python3 {sys.argv[0]} <input_dir> <output_dir>")
         sys.exit(1)
     input_dir = sys.argv[1]
     output_dir = sys.argv[2]
